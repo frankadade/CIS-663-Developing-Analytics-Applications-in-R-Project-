@@ -1,0 +1,649 @@
+---
+title: "Examining the Impact of U.S Government Covid-19 Response Stringency on S&P Stock Index"
+author: "Frank Adade"
+date: "December 4 2023"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Load necessary libraries
+library(dplyr)
+library(readxl)
+library(ggplot2)
+library(scales)
+library(psych)
+library(corrplot)
+library(tseries)
+library(lmtest)
+library(kableExtra)
+library(knitr)
+library(broom)
+library(writexl)
+```
+
+## Abstract
+
+This research explores the association between the S&P 500 Stock Index's performance and the strict restrictions taken by the U.S government during the COVID-19 pandemic. Using daily time series data from January 21, 2020, to October 11, 2023, research examines the association between changes in stock market volatility and pricing and the extent to which the government intervenes to control the pandemic. Through Ordinary Least Square (OLS) estimation techniques, the study reveals that increased U.S government stringency measures including lock downs, business and schools’ closure, and travel bans are significantly associated with a decrease in S&P 500 stock prices. Moreover, an increased in U.S government stringency measures have a significant positive impact on financial market volatility (fear index). The findings imply that the financial markets are significantly impacted by the government's implementation of strict regulations aimed at curbing the pandemic. The findings also help investors, risk managers, and legislators navigate the difficult trade-off between public health initiatives and the stability of the financial system. 
+
+
+## Introduction
+
+The global COVID-19 epidemic has compelled governments worldwide, including the US government, to make difficult choices in order to safeguard public health. For instance, the US government has implemented stringent regulations limiting travel and closing enterprises. These restrictions have an impact on the stock market and the economy. This paper examines the association between U.S government stringency actions in response to Covid-19 and S&P 500 Stock Index. The stock market, which is sensitive to both systemic risks and investor sentiment, acts as a gauge for the overall economy. The S&P 500 is a vital indicator of the state of American companies and the prospects for investors, serving as a key indicator of the performance of American stocks. Additionally, the Volatility Index (VIX) measures investors' expectations of short-term volatility, market risk, and stress, capturing the market's reactionary response to uncertainty. The dynamic interaction between market behavior and public health initiatives can be better understood by examining the relationship between these financial indicators and the stringency of government policy.
+
+This study employed quantitative analysis to investigate the association between the S&P 500 index performance and U.S. government Covid-19 restrictions measures. The findings from the study depicts that U.S government stringency index is inversely related to the S&P 500 stock prices. This shows that a surge in government restrictions such as lock down, business closure and travel bans have a significant negative impact on stock prices. In contrast, the same U.S government stringency index exerts a positive impact on fear index (volatility). These results highlight the delicate balance that policymakers must take when dealing with protecting the public's health with averting negative economic and financial effects. The findings have significant implications for risk managers, investors, as well as those developing policies.
+
+
+## Literature Review
+
+Recent academic studies have looked into how COVID-19 impact the volatility of equity markets. Salisu and Akanni (2020) developed a global fear index (GFI) based on the number of deaths and cases associated with COVID-19. According to the study, market returns in the OECD and the Group of Five Major Emerging Economies (BRICS) during the most recent COVID-19 epidemic were well-predicted by the global fear index. Albulescu (2020) investigates the impact of COVID-19 on U.S. stock market volatility. This study's empirical analysis shows that the volatility is increased by the global new cases and fatality ratio. Additionally, Uddin et al. (2021) examined the impact of COVID-19 cases and deaths on stock market volatility in developed and emerging nations using the EGARCH model. They used 34 developed and emerging markets' worth of data.  The study's findings demonstrate that economic factors and determinants at the national level can reduce stock market volatility brought on by the COVID-19 Pandemic.
+
+Yilmazkuday (2020) examines the effect of the COVID-19 cases on the S&P 500 index. The scholar employed a structural vector autoregression model and daily data covering from January 21, 2020, to August 10th, 2021. Empirical results indicate that a one percent increase in daily COVID-19 instances in the United States corresponds to a 0.01 percent decline in the S&P 500 index. Zhang et al. (2020) also investigate the impact of COVID-19 on stock market volatility in China and 11 other advanced economies. The empirical findings show a positive correlation between volatility in the stock market and COVID-19. 
+
+
+## Problem and its Significance 
+
+Following the Coronavirus pandemic (COVID-19), several steps were taken by the U.S government to stop the virus's transmission, ranging in severity from mild to severe. Despite being crucial for maintaining public health, the response might have had an impact on the S&P stock prices. Several scholarly studies have been driven by the coronavirus pandemic (COVID-19). The existing studies mostly concentrated on COVID-19 cases, death and its direct impact on volatility of the stock market (Zhang et al., 2020; Albulescu, 2020; and Baig et al., 2021). Most of these studies primarily focused on Asia (emerging market), the U.S and Europe (Advanced economy).  Albulescu (2020) investigates the association between US stock market volatility and COVID-19 new cases and death ratios. Mirza et al. (2020) also examine price reaction, performance and volatility timing of European investment funds during the outbreak of COVID-19. Similarly, Uddin et al. (2021) employed the Exponential Generalized Autoregressive Conditional Heteroscedasticity model (EGARCH) to investigate the effect of daily COVID-19 deaths and cases on stock market volatility in emerging economies (Asia). This research looked into how COVID-19 cases and deaths negatively impacted stock market volatility. In addition, I explore how the US government's strict response policies affect the price of S&P stocks. 
+
+Zaremba et al. (2020) examined stock data from 67 nations to establish the investigation into the impact of government policy responses on stock market volatility. These researchers investigated the collective and individual functions of seven distinct categories of government actions using panel regressions (panel data). In contrast to Zaremba et al. (2020), my research delves specifically into the impact of US government response stringency on the S&P stocks index, using the Ordinary Least Square (OLS) estimation approach. Examining the effect of U.S government response stringency on the S&P index holds significant importance for both investors and policymakers. To better inform policy decisions and help investors manage market dynamics in unpredictable times, this research offers a deeper knowledge of the association between the U.S equity market and governmental actions. Prior research only covers portions of 2020 and the first part of 2021, as seen in the works of Uddin et al. (2021), Zaremba et al. (2020), and Bakry et al. (2022). In addition, this study expands on previous research by extending the study period from January 21, 2020, to October 11, 2023.  
+
+
+# Research Questions
+
+This study seeks to address the following research questions. 
+
+How does the stringency of US government response measures correlate with fluctuations in S&P stock prices?
+
+How does the US government's response stringency to the COVID-19 pandemic influence the volatility of the S&P stock index? 
+
+
+## Theory
+
+The Efficient Market Hypothesis (EMH) serves as the foundation for this investigation. The Efficient Market Hypothesis (EMH) posits that stock prices are a reflection of all available information, and that new information, such as government response measures to the pandemic, will be swiftly included into stock prices. This study's theoretical framework is further informed by recent empirical research that looks into how COVID-19 response measurements affect S&P Stock prices. Based on the EMH and these empirical studies, I argue that government response stringency could exert a significant adverse impact on stock prices. Therefore, I propose the following hypotheses: 
+
+H1: The stringency of the US government's response to the COVID-19 pandemic is negatively correlated with S&P stock prices. 
+
+H2: The volatility of the S&P stock prices increases as the US government response stringency to the COVID-19 pandemic surges. 
+
+## Data
+
+I employed daily time series data from January 21st, 2020 to October 11th, 2023. The dataset for the study includes S&P stock prices, Volatility index, COVID-19 cases in the USA and stringency index. S&P stock price data will be obtained from Yahoo Finance. The S&P 500 Adjusted Close Price (GSPC.Ajusted Close) is the closing price of stocks in the S&P 500 index that has been adjusted for actions such as stock splits, dividends, and rights offerings. The volatility index will be obtained from the Chicago Board Options Exchange (CBOE). The Volatility Index is derived from S&P 500 index options and is frequently acquired via the Chicago Board Options Exchange (CBOE). This index commonly refers to as VIX and it is frequently used by investors as a fear index indicating the expected volatility of the market over time. A lower number suggest more stability or confidence in the market. A higher VIX value indicates greater predicted market volatility and investor concern. COVID-19 total cases data will be obtained from the World Health Organization (WHO). The stringency index data will be obtained from the Oxford COVID-19 Government Response Tracker.
+
+The stringency index offers a numerical score from 0 to 100 to quantify the government stringency of responses to the COVID-19 outbreak. It is computed using a number of indications, including travel restrictions, stay-at-home mandates, workplace and school closures, and more. The more severe the measures, the higher the score. This index is a crucial tool for comparing over time the pandemic response strategies of various countries. It helps understand the impact and progress of the COVID-19 pandemic by offering insights into the societal effects and effectiveness of various governmental approaches.
+
+
+## Data Preprocessing 
+
+Through the use of the R programming language, I conducted a thorough data preparation process for this investigation. Initially, I imported three important data sets: the U.S Covid-19 cases, the Volatility Index (VIX), and the S&P 500 Stock Index. I loaded all of these data sets into R from excel files kept in a special 'Data and Lit' folder on my desktop. After importing, I checked every data set to make sure the data importation procedure was accurate.
+
+### Importing the Data
+
+getwd()
+
+```{r import-data, message=FALSE, warning=FALSE}
+
+
+# Importing S&P 500 Financial Data
+SP500 <- read_excel("/Users/apple/Desktop/Data and Lit/SP500.xlsx")
+knitr::kable(head(SP500))
+
+# Importing Volatility Index Data
+VIX <- read_excel("/Users/apple/Desktop/Data and Lit/VIX.xlsx")
+knitr::kable(head(VIX))
+
+# Importing Covid-19 Data
+Covid <- read_excel("/Users/apple/Desktop/Data and Lit/Covid.xlsx")
+knitr::kable(head(Covid))
+
+```
+
+
+### Merging the Data Sets
+
+Combining these data sets to provide a single, comprehensive source of data for the research was the next crucial stage. To make sure all of the S&P 500's observations were included, I first merged the data sets from the VIX and S&P 500. 
+
+```{r merge-data}
+
+# Merging S&P 500 data with VIX (Volatility) data
+Merged_SP500_VIX <- merge(SP500, VIX, by = "Date", all.x = TRUE)
+
+# Merging the above result with the COVID-19 data
+Final_merged_data <- merge(Merged_SP500_VIX, Covid, by = "Date", all.x = TRUE)
+
+# Display the first few rows of the merged data
+knitr::kable(head(Final_merged_data))
+```
+
+
+## Converting the Date Column to Date-only Format
+
+I then aligned all of the data according to a common column called dates by merging this combined dataset with the COVID-19 data. After these dataset were successfully merged, I improved the timeline analysis's consistency and clarity by transforming the 'Date' column to a standard date-only format. 
+
+```{r convert-date}
+# Converting the Date column to date-only format
+
+Final_merged_data$Date <- as.Date(Final_merged_data$Date)
+
+```
+
+
+## Writing and Re-Importing the Data 
+
+It is best practice to write the processed data into an Excel file after the data set is completed. In addition to storing the data, this makes it readily available for further study. I then import the data again to be sure it was stored correctly.
+
+
+```{r write-data into excel file}
+
+# Writing the processed data to an Excel file
+
+write_xlsx(Final_merged_data, "Final_merged_data.xlsx")
+
+# Re-importing the final data
+
+data <- read_excel("/Users/apple/Desktop/Data and Lit/data.xlsx")
+
+
+# Displaying the first few rows for inspection
+
+knitr::kable(head(data))
+```
+
+
+## Checking for Missing Values 
+
+I carefully checked for any missing values after re-importing the final dataset to guarantee the accuracy and completeness of the data. This was an important step because incomplete data can seriously undermine the reliability of statistical analysis. After careful inspection, I found no missing values, confirming the dataset's robustness. Lastly, I make sure that the data types in each column are suitable for the analysis that will come after.
+
+
+```{r checking for missing values}
+
+# Checking for missing values in the entire dataset
+
+total_missing_values <- sum(is.na(data))
+
+total_missing_values
+
+# Checking missing values by columns
+
+colSums(is.na(data))
+
+# Checking data types of each column
+
+sapply(data, class)
+
+```
+
+
+## Descriptive Statistic
+
+I perform a descriptive analysis on the dataset's important variables. This comprises Total COVID-19 Cases, S&P 500 Volatility Index, S&P 500 Adjusted Close Price, S&P 500 Volume, and Stringency Index.The main goal is to understand the fundamental characteristics of the data, such as central tendency, dispersion, and distribution shape. The descriptive statistics analysis results for S&P500 Volume of trade, S&P500 Adjusted Close price, S&P 500 Volatility index, Stringency Index, and Total Covid 19 cases in million are shown in table 1 above. Based on 939 sample size, the mean value of S&P500 Volume of trade is 4.5384, mean value of S&P500 Adjusted Close price is 3.9452, mean value of S&P 500 Volatility index is 2.3460, mean of Stringency Index is 3.9010, the mean value of Total Covid 19 cases in million is 1.6337. The variability (standard deviation) of S&P 500 Volatility index is the highest around its mean value whiles the variability of S&P500 Volume of trade is the lowest around its mean value.  
+
+
+```{r descriptive-statistics}
+
+#I also focus on metrics such as Number of Observation, Mean, Minimum, Maximum and Standard Deviation
+
+numeric_data <- data %>% select(where(is.numeric))
+
+# Computing descriptive statistics
+detailed_stats <- describe(numeric_data)
+
+# Displaying the descriptive statistics as a table with additional styling
+#knitr::kable(detailed_stats, caption = "Table 1 Descriptive Statistics") %>%
+  #kable_styling(bootstrap_options = c("striped", "hover"))
+
+knitr::kable(detailed_stats, caption = "Table 1: Descriptive Statistics", format = "simple")
+
+
+```
+
+
+## Correlation Matrix
+
+This section investigates the relationship between total Covid-19 cases in million, S&P 500 Volume, S&P 500 Adjusted Close price, S&P 500 Volatility index, and Stringency Index. I explored the correlation analysis among S&P500 Volume, S&P500 Adjusted Close price, S&P 500 Volatility index, Stringency Index, and Total Covid 19 cases in million. The Correlation Matrix result are shown above (see table 2). Base on the Correlation result, there is a moderate negative relationship between S&P500 Volume and S&P500 Adjusted Close price. S&P500 Adjusted Close price and S&P500 Volume have a correlation coefficient of (r=-0.4297). This means that S&P500 Volume and S&P500 Adjusted Close price do not move in tandem. Additionally, there is a moderate negative relationship between Stringency Index and GSPC.Adjusted. Stringency Index and GSPC.Adjusted have a correlation coefficient of (r= -0.3742). This result indicates that Stringency Index and GSPC.Adjusted do not moves in the same direction. It means an increase in Stringency Index is associated with a decrease in GSPC.Adjusted. 
+
+Also, there is a moderate positive relationship between stringency index and stock volatility with a correlation coefficient of (r=0.3527). The result depicts that stringency index and stock volatility moves in the same direction. This means that an increase in the government rules on Covid-19 called stringency index is associated with an increase in the stock volatility. Furthermore, there is a strong negative relationship between stock volatility and stock price. stock volatility and stock price have a correlation coefficient of (r=-0.6951). The negative relationship between stock volatility and stock price indicates that stock volatility and stock price do not move in the same direction. 
+
+Finally, there is a strong negative, relationship between Covid-19 total cases and government stringency index. Covid-19 total cases and government stringency index have a correlation coefficient of (r=-0.8063). This result indicate that Covid-19 total cases and government stringency index do not move in the same direction. An increase in government strictness of Covid-19 rules including lockdown is negatively correlated with Covid-19 total cases. 
+
+
+```{r Correlation analysis}
+
+# Selecting only numeric columns for analysis
+numeric_data <- data %>% select(where(is.numeric))
+
+# Computing the correlation matrix
+
+correlation_matrix <- cor(numeric_data, use = "complete.obs")
+
+# Displaying the correlation matrix as a table
+
+#knitr::kable(correlation_matrix, caption = "Table 2 Correlation Analysis") %>% 
+  #kable_styling(bootstrap_options = c("striped", "hover"))
+
+knitr::kable(correlation_matrix, caption = "Table 2: Correlation Analysis", format = "simple")
+
+
+```
+
+## I performed Heatmap to visualise the correlation matrix for better understanding and interpretation. 
+
+```{r Heatmp using Corrplot}
+
+# Creating the heatmap 
+
+corrplot(correlation_matrix, method = "color", type = "upper", 
+         order = "hclust", addCoef.col = "black", 
+         tl.col = "black", tl.srt = 45, 
+         diag = FALSE)
+
+# Adding title to the plot
+
+mtext("Figure 1: Heatmap", side = 1, line = 4, cex = 1.2)
+
+```
+
+## Trend Analysis
+
+This section looks at the Stringency Index, the S&P 500 adjusted closing price and Volatility index trends over time. The objective is to identify the relationship between market performance and the stringency of government policies within the chosen time period. 
+
+
+## Trend Analysis for Stringency Index and S&P 500 GSPC.Adjusted Close (Figure 2)
+
+This trend analysis (figure 2) depicts the movement of S&P 500 adjusted closing prices (GSPC.Adjusted) with Stringency Index. This trend analysis provides an important relationship between equity market performance and government policy stringency over time. S&P 500 adjusted closing prices (GSPC.Adjusted) shows fluctuations and a downward trend in response to increasing Stringency Index values, indicating financial market sensitivity to the implementation of restrictive government policies. This could be associated with investors understanding about the potential dampening of economic activities and corporate profitability. Also, a decrease in stringency index, indicating less restrictions, is associated with an increase in S&P 500 adjusted closing prices. This reflects investors optimism towards economic recovery and improved business conditions. 
+
+
+
+```{r Figure 2: Trend Analysis of S&P 500 adjusted closing prices (GSPC.Adjusted) and Stringency Index}
+
+# Converting the Date column to a Date type 
+data$Date <- as.Date(data$Date)
+
+
+# Create the plot with improved formatting
+
+ggplot(data, aes(x = Date)) + 
+  geom_line(aes(y = GSPC.Adjusted, colour = "GSPC Adjusted")) +
+  geom_line(aes(y = stringency_index * 100, colour = "Stringency Index")) +
+  scale_y_continuous(name = "GSPC Adjusted Close",
+                     sec.axis = sec_axis(~./100, name = "Stringency Index (Scaled)")) +
+  scale_x_date(labels = date_format("%Y-%m"), breaks = date_breaks("3 months")) +
+  labs(title = "Trend Analysis of S&P 500 Adjusted Close and Stringency Index",
+       y = "GSPC Adjusted Close",
+       colour = "Indicator") +
+  scale_colour_manual(values = c("GSPC Adjusted" = "red", "Stringency Index" = "blue")) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+## Trend Anlysis (Figure 3)
+
+This graph illustrates the relationship between the Covid-19 Stringency Index and the S&P 500 Volatility Index, commonly referred to as the "Fear Index," and it offers insights on market volatility in relation to U.S government-imposed restrictions during Covid-19 pandemic.
+
+The graph below (figure 3) illustrates the trend analysis of S&P 500 Volatility Index which is also known as fear index and stringency index. Fear index measures the equity market volatility expectations. Stringency index is a measure of government restrictions during the Covid -19 pandemic. According to the trend analysis above, as the stringency index increases, depicting a tighter restriction from the government, volatility index (Fear index) also tends to rise. This means that investors expect a greater up and down in stock prices when the government impose a stricter restriction such as lockdowns and travel bans. Moreover, as government restrictions during the Covid-19 pandemic (stringency index) decreases, fear index (volatility index) also decreases. This indicates that investors are less worried about the stock market fluctuations because they believe the economy will bounce back to normal as government restrictions reduces.  
+```{r Figure 3: Trend Analysis of S&P 500 Fear Index (Volatility Index) and Covid-19 Stringency Index}
+
+# Making sure the Date column is in the Date format
+data$Date <- as.Date(data$Date)
+
+# Create the base ggplot object with the VIX on the primary y-axis
+plot <- ggplot(data, aes(x = Date)) +
+  geom_line(aes(y = VIX, color = "VIX")) +
+  scale_color_manual(values = c("VIX" = "red", "stringency_index" = "blue")) +
+  labs(title = "Trend Analysis: VIX and Stringency Index Over Time",
+       color = "Indicator") +
+  theme_minimal()
+
+# Add the stringency index on the secondary y-axis
+# Adjust the scaling factor for the stringency index if needed
+plot <- plot + geom_line(aes(y = stringency_index, color = "stringency_index")) +
+  scale_y_continuous(name = "VIX",
+                     sec.axis = sec_axis(~. * 1, name = "Stringency Index")) 
+
+# Improve the x-axis date breaks and labels for clarity over a long time frame
+
+plot <- plot + scale_x_date(date_breaks = "3 months", date_labels = "%b %m, %Y") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
+
+
+# Display the plot
+plot
+
+```
+
+
+## Unit Root Test
+
+The existence of unit roots in a dataset can have a substantial impact on the validity and reliability of statistical inferences in the field of time series analysis, especially when working with economic and financial data. Unit roots in time series data indicate non-stationary, which means that variance and mean are not constant but varies over time. In time series analysis, this non-stationary is crucial because, if left unchecked, it can produce erroneous forecasts and misleading regression results. I employed Augmented Dickey-Fuller (ADF) unit root test to check for unit root in the dataset. The hypothesis for the unit root test is as follows: 
+
+H0: The time series has a unit root (non-stationary time series data)
+
+H1: The time series do not have a unit root (stationary time series data)
+
+The general rule of thumb for the Augmented Dickey-Fuller (ADF) test is that we fail to reject the null hypothesis, which indicate the presence of unit root, if the p values is greater than 0.05 percent significant level. This means that there is no strong evidence to conclude that the time series is stationary. 
+
+
+```{r Unit Root Test by Using Augmented Dickey-Fuller (ADF)}
+
+# Exclude non-numeric and Date columns
+numeric_columns <- sapply(data, is.numeric)
+data_numeric <- data[, numeric_columns]
+
+# Remove the Date column if it's still included
+if ("Date" %in% names(data_numeric)) {
+  data_numeric$Date <- NULL
+}
+
+# Initialize a list to store ADF test results
+adf_results <- list()
+
+# Loop through the dataset and perform ADF test on each numeric column
+for (col in names(data_numeric)) {
+  cat("Performing ADF test on", col, "...\n")
+  adf_results[[col]] <- adf.test(data_numeric[[col]], alternative = "stationary")
+}
+
+# Print the results
+adf_results_df <- do.call(rbind, adf_results)
+knitr::kable(adf_results_df)
+
+```
+
+``` {r Creating a dataframe and table for the ADF test result}
+
+# Creating a data frame for the ADF test results. Easy to understand and interpret
+adf_results_df <- data.frame(
+  statistic = c(-5.58474392736583, -1.93658544986495, -4.65723966239251, -1.43957061724315, -5.05154784049958),
+  parameter = c("Lag order = 9", "Lag order = 9", "Lag order = 9", "Lag order = 9", "Lag order = 9"),
+  alternative = "stationary",
+  p.value = c(0.01, 0.60515391422211, 0.01, 0.81554036319708, 0.01),
+  method = "Augmented Dickey-Fuller Test",
+  data.name = c("GSPC.Volume", "GSPC.Adjusted", "VIX", "total_cases_per_million", "stringency_index")
+)
+
+# Displaying the result in a table form 
+knitr::kable(adf_results_df, caption = "Table 3 ADF Test Results")
+
+```
+
+## Data Transformation: First Differencing 
+
+GSPC.Ajusted Close and Total Covid-19 cases were not stationary at level form. To eliminate any non-stationarity in specific variables, I employed differencing for the GSPC.Adjusted Close and total_cases_per_million columns. This method reduces trend and seasonality in a time series by eliminating level fluctuations, which stabilises the mean of the time series.
+
+```{r First Differencing}
+
+# First Difference the 'GSPC.Adjusted' column and adding NA at the beginning
+
+data$GSPC.Adjusted_diff <- c(NA, diff(data$GSPC.Adjusted, differences = 1))
+
+# First Difference the 'total_cases_per_million' column and adding NA at the beginning
+
+data$total_cases_per_million_diff <- c(NA, diff(data$total_cases_per_million, differences = 1))
+
+```
+
+I then performed stationarity test again on the newly created variables (first differencing) for Total Covid cases and S&P 500 Adjusted Close Price, Stringency Index, Volatility Index, and Volume of trade. 
+
+```{r Confirming Stationarity in all the study variables}
+
+# List of columns to test
+columns_to_test <- c("GSPC.Adjusted_diff", "total_cases_per_million_diff", "VIX", "GSPC.Volume", "stringency_index")
+
+# Function to perform and print ADF test result
+perform_and_print_adf_test <- function(data, column_name) {
+  series <- na.omit(data[[column_name]])
+  if(length(series) > 0) {  # Check if the series is not empty after removing NAs
+    adf_test_result <- adf.test(series, alternative = "stationary")
+    print(paste("ADF test result for", column_name, ": p-value =", adf_test_result$p.value))
+  } else {
+    print(paste("Series", column_name, "is empty after removing NA values"))
+  }
+}
+
+# Performing the ADF test on each column
+for (col_name in columns_to_test) {
+  perform_and_print_adf_test(data, col_name)
+}
+
+```
+
+
+```{r creating a table of the ADF test }
+
+# Creating a data frame for the ADF test result 
+adf_results_df <- data.frame(
+  Column = c("GSPC.Adjusted_diff", "total_cases_per_million_diff", "VIX", "GSPC.Volume", "stringency_index"),
+  PValue = rep("<0.01", 5)  # All the  p-value's were smaller than 0.01
+)
+
+# Showing the result in a table form
+knitr::kable(adf_results_df, caption = "Table 4: ADF Test Results")
+
+```
+
+The result indicates that all the variables are stationary
+
+
+## Natural log transformation 
+
+I performed natural log of Adjusted close price, Volatility, and Trading volume to address heteroscedasticity and enhance the robustness of the regression result. 
+
+```{r Natural log transformation of the variables}
+
+# Natural log of GSPC.Adjusted Close Price
+
+data$GSPC.Adjusted_ln <- log(data$GSPC.Adjusted)
+
+
+# Natural log of GSPC.Volume
+
+data$GSPC.Volume_ln <- log(data$GSPC.Volume)
+
+# Natural log of Fear Index also known as Volatility Index
+
+data$VIX_ln <- log(data$VIX)
+
+```
+
+
+## Methodology
+
+Following a recent similar study done by Albulescu (2020), employing Ordinary Least Square estimation techniques to examine the effect of COVID-19 on the stock market volatility in the U.S. Similarly, this study uses Ordinary Least Square (OLS) estimation techniques to examine the effect of US government response stringency on S&P Stock Prices. The econometric model specification for this objective is as follows: 
+
+
+##Econometrics Model:
+
+S&P Stock Pricet = a0 + B1Stringency_Indext + B2COVID_19_Casest + B3Volatilityt + et
+
+## Econometrics Equation:
+
+S&P Stock Pricet = 9.244 - 0.0008944Stringency_Indext + 0.000056COVID_19_Casest - 0.3079Volatilityt 
+
+Where S&P Stock Price is the dependent variable at time t. Stringency index, COVID-19 cases and S&P Volatility index will be used as independent variables. et is the error term at time t and B’s are the parameters to be estimated.The natural logarithm of the S&P 500 Adjusted Close Price was my dependent variable; my independent variables were the natural log of the Volatility Index, the government stringency index, and the total number of COVID-19 cases. 939 observations from the dataset were used in the study.
+
+```{r Ordinary Least Square Regression and Diagnostic Test}
+# Natural log of GSPC Adjusted Close was used as dependent variable
+
+# Subset the data to exclude NA's in the specified columns
+data_cleaned <- data[complete.cases(data[("total_cases_per_million_diff")]), ]
+
+
+# Construct the OLS model
+model <- lm(GSPC.Adjusted_ln ~ stringency_index + total_cases_per_million_diff + VIX_ln, data = data_cleaned)
+
+# Printing  the deatail summary of the model
+summary(model)
+
+
+# Tidying the model results for a cleaner table format
+tidy_model <- tidy(model)
+
+# Creating the table with kable
+knitr::kable(tidy_model, caption = "Table 4: Regression Analysis Results", format = "simple")
+
+```
+```{r Heteroscedasticity Test}
+# Breusch Pagan Test for heteroscedasticity
+
+library(lmtest)
+
+model <- lm(GSPC.Adjusted_ln ~ stringency_index + total_cases_per_million_diff + VIX_ln, data = data_cleaned)
+
+
+test_result <- bptest(model)
+print(test_result)
+
+```
+
+```{r First Model Heteroscedasticity Visualization}
+# fitted a linear model 
+fitted_values <- fitted(model)
+residuals <- residuals(model)
+
+# Create a basic residual plot
+
+ggplot(data = NULL, aes(x = fitted_values, y = residuals)) +
+  geom_point() +
+  geom_smooth(method = "loess", se = FALSE) +
+  theme_minimal() +
+  labs(title = "Residuals vs Fitted Values",
+       x = "Fitted Values",
+       y = "Residuals")
+```
+
+
+## Result Presentation and  Discussion 
+
+The goal of this study is to examine the impact of U.S government stringency index on S&P 500 Stock prices. The stringency index offers a numerical score from 0 to 100 to quantify the government stringency of responses to the COVID-19 outbreak. It is computed using a number of indications, including travel restrictions, stay-at-home mandates, workplace and school closures, and more. The more severe the measures, the higher the score. The sample size used in this study was 939. The table above (table 4) illustrate Ordinary Least Squares regression analysis result for the study. I employed S&P 500 Adjusted Close (natural log of Price) as dependent variable. The results shows that U.S government stringency index has a negative and statistically significant impact on S&P 500 Stock Price. 
+
+
+Holding other variables constant, a percentage increase in U.S government restrictions including lockdowns and travel ban to Covid-19 pandemic is associated with (-0.0009 *100) % = -0.09% decrease in S&P 500 Stock Price. Government restrictions to Covid-19 such as lockdowns, travel restrictions, and business closures reduces investors’ confidence in the financial market. Investors might anticipate low corporate earnings and economic slowdown due to the government high restrictions measures to the Covid-19 pandemic. This could lead to a bearish market sentiment and result in high sell-off in the stock market, adversely impacting stock prices. 
+
+Furthermore, increased government restrictions to Covid-19 pandemic often brings increase economic uncertainty. Investors might lean towards safer assets during uncertain times, which would lower demand for risky assets like equities. Stock prices may drop even further as a result of this risk aversion behavior. Lastly, reduced economic activity is typically correlated with strict government regulations. The economy's total amount of spending decreases when companies close and consumer choices are limited. Given that market indices like the S&P 500 represent the state of the economy, this slowdown may have a negative impact on them. The coefficient of determination measures the proportion of the variance in the dependent variable that is explained by the variations in the independent variables. From the result above, the contribution of stringency index, volatility index and total Covid-19 cases to the change in the Stock Price is 56.75%. Overall, the model is statistically significant, as indicated by the F-statistics and its associated P-value. This means that the collective set of independent variables significantly explains the variations in the dependent variable. 
+
+
+## Interpretation of Breusch Pagan Test for Heteroscedasticity
+
+I also conducted Breusch-Pagan test for heteroscedasticity assumption to ensure the reliability of the model. The Breusch-Pagan test evaluates the following hypothesis: 
+
+H0: Homoscedasticity is present. Meaning the variance of the error term is constant
+
+H1: Heteroscedasticity is present. Indicating that variance of the error term is not constant. 
+
+The general rule of thumb is that we fail to reject the null hypothesis of homoscedasticity if the p-value is greater than the 0.05 significance level. A P-value above this threshold indicates that there is not enough evidence to indicate the presence of heteroscedasticity in the model. From the result above, I can conclude that there is no evidence to indicate the presence of heteroscedasticity in the model. This means that the variance of the errors is constant across the different levels of the independent variables in the model
+
+
+
+
+## Second Model
+
+To examine the US government response stringency on the volatility of the S&P stock index, I employed time series data analysis to estimate the following model: 
+
+Econometrics Model: 
+Volatilityt = a0 + B1Stringency_Indext + B2COVID_19_Casest + B3S&P_Stock_Pricet + et
+
+Where the Stock Volatility index is the dependent variable at time t. The stringency index, COVID-19 cases and S&P stock price were be used as independent variables. 
+
+Econometrics Equation: 
+Volatilityt = 11.38 + 0.0014Stringency_Indext + 0.0000GSPC.Volumet - 1.062S&P_Stock_Pricet 
+
+```{r Secod  Ordinary Least Square Model }
+
+# Construct the OLS model for the second analysis
+model_fear <- lm(VIX_ln ~ stringency_index + GSPC.Adjusted_ln + GSPC.Volume, data = data_cleaned)
+
+# Printing the detailed summary of the model
+summary(model_fear)
+
+# Tidying the model results for a cleaner table format
+tidy_model_fear <- tidy(model_fear)
+
+# Creating the table  for Word output
+
+knitr::kable(tidy_model, caption = "Table 5: Regression Analysis Results for Volatility Index", format = "simple")
+
+```
+
+
+## Result Discussion
+
+The goal of this study is to examine the impact of U.S government stringency index on S&P 500 Volatility Index. This index commonly refers to as VIX and it is frequently used by investors as a fear index indicating the expected volatility of the market over time. A lower number suggest more stability or confidence in the market. The sample size used in this study was 939. The table above (table 5) illustrate Ordinary Least Squares regression analysis result for the study. I employed S&P 500 Volatility Index (natural log of VIX) as dependent variable. The results shows that U.S government stringency index has a positive and statistically significant impact on S&P 500 volatility index.
+
+Holding other variables constant, a percentage increase in U.S government restrictions including lockdowns and travel ban to Covid-19 pandemic is associated with ( *100) % = 0.14% increase in S&P 500 Stock volatility. A higher level of concern about the public health situation is shown when the U.S. government implements more restrictions in reaction to the COVID-19 pandemic, such as lockdowns and travel bans. Although these actions are vital for maintaining public health, they could put uncertainty on the future of the economy. Investors may start to have a negative sentiment about the state of the economy, corporate earnings, and the business condition in general. 
+
+Moreover, volatility in the markets often increases as a result of uncertainty. Given the uncertainty surrounding their future expectations, investors may respond more sharply to news and economic information, which might cause stock prices to fluctuate more dramatically. The market is more volatile when investment positions are quickly adjusted in reaction to new information or projections. Tight measures, such as travel bans and lockdowns, can have a direct effect on businesses by cutting into consumer spending, disrupting supply chains, and disrupting commercial operations in specific industries. The volatility of the market as a whole may be worsened by the diverse and unpredictable consequences that this direct economic impact may have on the stock prices of various companies.
+
+From the result above, the contribution of stringency index, GSPC.Adjusted Close and GSPC.Volume to the change in the Fear Index (VIX) is 62.98%. Overall, the model is statistically significant, as indicated by the F-statistics and its associated P-value. This means that the collective set of independent variables significantly explains the variations in the dependent variable. 
+
+
+## Normality Test
+
+I conducted Jarque Bera test for normality. The Jarque Bera test assesses the following hypothesis: 
+H0: The residual is normally distributed. 
+
+H1: The residual is not normally distributed. 
+
+```{r Normality}
+# Perform the Jarque-Bera test on the residuals of the model
+jarque_bera_result <- jarque.bera.test(residuals(model))
+
+# Print the test results
+print(jarque_bera_result)
+
+```
+
+```{r Ploting Normality test (Bell Curve)}
+# Create a density plot of the residuals with a bell curve overlay
+hist(residuals(model), main = "Histogram of Residuals", freq = FALSE)
+curve(dnorm(x, mean = mean(residuals(model)), sd = sd(residuals(model))), 
+      col = "red", lwd = 2, add = TRUE)
+
+```
+
+## Normality Result Interpretation
+
+The general rule of thumb is that we fail to reject the null hypothesis of normal distribution if the p-value is greater than the 0.05 significance level. A P-value above this threshold indicates that residual is asymptotically normally distributed. From the Jarque Bera test for normality result above, we can conclude that the residual is asymptotically normally distributed since the P-value is greater than 0.05 significant level. 
+
+## Implication of the Study
+
+This research examines the association between the performance of the S&P 500 stock index and the strict measures implemented by the U.S. government during the COVID-19 pandemic. The study findings demonstrate an important information for policy makers, investors and economist. The results depict that an increased government intervention, such as lockdowns and travel restrictions during the Covid-19 pandemic is associated with a decline in stock prices. This finding indicates the necessity for flexible investment strategies in reaction to changes in governmental policy. This finding provides a crucial information for investors and portfolio managers. Additionally, the study finds a favorable relationship between market volatility and U.S government strict regulations during Covid-19. This finding is critical because it helps traders and financial institutions improve risk management models and make well-informed investment decisions. 
+
+Again, the results offer policymakers insightful information about policies formulation during health crisis. The study findings draw attention to how decisions about public health affect the economy, highlighting the necessity for a balanced strategy that takes both public health stability and economic stability into account. Additionally, the study findings provide financial analysts and economists with new insights on how to forecast market patterns, especially in times of health crisis. This promotes a cooperative strategy in which public health experts and economic leaders collaborate to formulate policies that preserve both the well-being of the public and the country's economic stability.
+
+
+## Limitation of the Study
+
+This study has several limitations that should be taken into account, nevertheless it provides insights into the association between the S&P stock index and U.S. government stringency measures over a particular period. While the data period, which runs from January 2020 to October 2023, covers the peak of the COVID-19 pandemic, it might not fully capture the entire cycle of market responses to such changes in public policy. Furthermore, there is a limited set of control variables included, which could lead to omitted variable bias if other significant factors were overlooked. In addition, while Ordinary Least Squares (OLS) estimate offers a helpful beginning point, it is relatively straightforward and might fail to identify deeper dynamics that could be revealed by machine learning techniques or Vector Autoregressive (VAR) time series modelling.
+
+
+## Direction for Further Research
+
+To further understand the long-term effects of government stringency measures on market dynamics, a longer time period should be investigated in future studies. Distinguishing the specific impacts of government policies from other concurrent financial activities may also be made easier by including a larger range of control variables. To examine the association and causality between these variables in greater detail, advanced estimating techniques such Vector Autoregressive (VAR) models could be used. Furthermore, simple econometric model like Ordinary Least Squares (OLS) might miss non-linear patterns and interactions that machine learning models could reveal. The aforementioned techniques might offer a more advanced insight of the association between the tightening of governmental regulations and the volatility of financial markets.
+
+
+## Conclusion
+
+This study examined the association between the performance of the S&P stock index and the strict restrictions taken by the US government in reaction to COVID-19. Through the use of daily data covering from January 2020 to October 2023, I was able to gather substantial evidence that heightened government enforcement of travel restrictions and lockdowns tends to decrease S&P stock prices. The tight restrictions also cause the stock market to fluctuate more, as evidenced by the increase in the volatility index. These results imply that the financial markets are actually affected when the government imposes strict regulations to contain the pandemic. This study emphasizes how crucial it is for policymakers and investors to take into account the potential effects of public health decisions made during a pandemic on the stability of the stock market and the economy.
+
+
+
+## References
+
+Albulescu, C.T. (2021). COVID-19 and the United States financial market’s volatility. Finance Research Letters, 38, 101699. Retrieved from https://doi.org/10.1016/j.frl.2020.101699. 
+
+Baig, A.S., Butt, H.A., Haroon, O., & Rizvi, S. (2021). Deaths, panic, lockdowns and US equity markets: The case of COVID-19 pandemic. Finance Research Letters, 38, 101701. Retrieved from https://doi.org/10.1016/j.frl.2020.101701. 
+
+Bakry, W., Kavalmthara, Saverimuttu, V., Yiyang, L., & Sajan. (2022). Responses of stock market volatility to COVID-19 announcements and stringency measures: A comparison of developed and emerging markets. Finance Research Letters, 46, 102350.
+
+Uddin, M., Chowdhury, A., Anderson, K., & Chaudhuri, K. (2021). The effect of the COVID-19 pandemic on global stock market volatility: Can economic strength help to manage the uncertainty? Journal of Business Research, 128(1), 31-44. Retrieved from 
+https://doi.org/10.1016/j.jbusres.2021.01.061.
+
+Salisu, A.A., & Akanni, L. O. (2020). Constructing a global fear index for the COVID-19 pandemic. Emerging Markets Finance and Trade, 56(10), 2310-2331. 
+
+Yilmazkuday, H. (2020). COVID-19 effects on the S&P 500 Index. Applied Econometrics Letters. [Preprint]. Retrieved from https://ssrn.com/abstract=3555433. 
+
+Zaremba, A., Kizys, R., Aharon, D.Y., & Demir, E. (2020). Infected markets: Novel coronavirus, government interventions, and stock return volatility around the globe. Finance Research Letters, 35, 101597. Retrieved from https://doi.org/10.1016/j.frl.2020.101597. 
+Zhang, D., Hu, M., & Ji, Q. (2020). Financial markets under the global pandemic of COVID-19. Finance Research Letters, 36, 101528.
+
+
+
